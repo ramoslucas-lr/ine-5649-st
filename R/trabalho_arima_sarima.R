@@ -3,46 +3,23 @@ library(ggplot2)
 
 ### LEITURA DA BASE
 base = read.csv("../data/processed/cs2_daily.csv") 
-jogadores = ts(base$jogadores_peak, frequency = 7, start = c(1, 4))
-
-### AJUSTE DA MEDIA MOVEL
-mod.ar <- arima(jogadores, order = c(1, 1, 0)) 
-summary(mod.ar) 
-checkresiduals(mod.ar) 
-
-mod.ma <- arima(jogadores, order = c(0, 1, 1)) 
-summary(mod.ma) 
-checkresiduals(mod.ma) 
-
-mod.arima1 <- arima(jogadores, order = c(1, 1, 1)) 
-summary(mod.arima1) 
-checkresiduals(mod.arima1)
-
-### AJUSTE DO MODELO ARIMA
-mod.arima <- auto.arima(jogadores, seasonal = FALSE) 
-summary(mod.arima) 
-checkresiduals(mod.arima) 
-mod.arima %>% forecast(h = 7) %>% autoplot()
-
-### AJUSTE DO MODELO SARIMA
-mod.sarima <- auto.arima(jogadores, seasonal = TRUE) 
-summary(mod.sarima) 
-checkresiduals(mod.sarima) 
-mod.sarima %>% forecast(h = 7) %>% autoplot()
+jogadores = ts(base$players_peak, frequency = 7, start = c(1, 4))
 
 ### AJUSTE DOS MODELOS SEPARANDO BASE TREINO E BASE TESTE
 treino <- window(jogadores, end = c(160, 6)) 
 teste  <- window(jogadores, start = c(160, 7))
 
-mod.arima2 <- auto.arima(treino, seasonal = FALSE) 
-prev_arima <- forecast(mod.arima2, h = length(teste)) 
+mod.arima <- auto.arima(treino, seasonal = FALSE) 
+prev_arima <- forecast(mod.arima, h = length(teste)) 
+summary(mod.arima)
 
-mod.sarima2 <- auto.arima(treino, seasonal = TRUE) 
-prev_sarima <- forecast(mod.sarima2, h = length(teste))
+mod.sarima <- auto.arima(treino, seasonal = TRUE) 
+prev_sarima <- forecast(mod.sarima, h = length(teste))
+summary(mod.sarima)
 
 ### DIAGNÓSTICO DE RESÍDUOS
-checkresiduals(mod.arima2) 
-checkresiduals(mod.sarima2)
+checkresiduals(mod.arima) 
+checkresiduals(mod.sarima)
 
 ### ANÁLISE GRÁFICA DO AJUSTE
 
